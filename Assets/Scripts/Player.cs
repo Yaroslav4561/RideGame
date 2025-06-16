@@ -26,6 +26,11 @@ public class Player : MonoBehaviour
     private bool isTouching = false;
     private bool isInAir = false;
     private bool isDead = false;
+    private bool canControl = true;
+    public GameObject shopUI;
+    public GameObject mainMenuUI;
+
+
 
 
     void Start()
@@ -36,8 +41,17 @@ public class Player : MonoBehaviour
         gameOverMenu.SetActive(false);
     }
 
+
     void Update()
     {
+        // Блокуємо гравця, якщо відкритий магазин або головне меню
+        if ((shopUI != null && shopUI.activeSelf) ||
+            (mainMenuUI != null && mainMenuUI.activeSelf))
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
+        if (!canControl) return;
         bool headHit = Physics2D.OverlapCircle(headCheck.position, headCheckRadius, groundLayer);
 
         if (headHit)
@@ -65,23 +79,26 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        if ((shopUI != null && shopUI.activeSelf) ||
+     (mainMenuUI != null && mainMenuUI.activeSelf))
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
+        if (!canControl) return;
         if (!isInAir)
         {
             if (isTouching)
             {
-                // Якщо торкаємось екрану – прискорюємось
                 currentSpeed += acceleration * 2f * Time.fixedDeltaTime;
             }
             else
             {
-                // Якщо не торкаємось – швидкість = 0
                 currentSpeed -= deceleration * 2f * Time.fixedDeltaTime;
             }
 
-            // Обмежуємо швидкість в межах дозволеного
             currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeed);
 
-            // Рух відносно локальної системи координат персонажа
             rb.velocity = transform.right * currentSpeed;
         }
     }
@@ -109,29 +126,23 @@ public class Player : MonoBehaviour
         isDead = true;
         Debug.Log("Гравець помер!");
 
-        // Зупиняємо рух персонажа
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
-        rb.bodyType = RigidbodyType2D.Static; // Заморожуємо фізику
+        rb.bodyType = RigidbodyType2D.Static;
 
-        // Запускаємо анімацію смерті
         animator.SetTrigger("Die");
 
-        // Запускаємо корутину для очікування завершення анімації
         StartCoroutine(DeathRoutine());
     }
 
     private IEnumerator DeathRoutine()
     {
-        // Отримуємо тривалість анімації смерті
         float deathAnimTime = animator.GetCurrentAnimatorStateInfo(0).length;
 
-        yield return new WaitForSeconds(deathAnimTime); // Чекаємо завершення анімації
+        yield return new WaitForSeconds(deathAnimTime);
 
-        // Після анімації вимикаємо об'єкт
         gameObject.SetActive(false);
 
-        // Показуємо меню Game Over
         ShowGameOverMenu();
     }
 
@@ -167,6 +178,11 @@ public class Player : MonoBehaviour
     {
         Application.Quit();
     }
+    public void SetControl(bool state)
+    {
+        canControl = state;
+    }
+
 
     public float GetCurrentSpeed()
     {

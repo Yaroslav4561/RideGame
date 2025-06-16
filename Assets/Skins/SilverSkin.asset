@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10e1dae12802e2542b424b2e04cfc17e, type: 3}
+  m_Name: SilverSkin
+  m_EditorClassIdentifier: 
+  id: SkinSilver
+  image: {fileID: 21300000, guid: 08df2874354b5e14296725e0967df7ac, type: 3}
+  price: 200
