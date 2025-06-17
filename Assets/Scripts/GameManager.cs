@@ -6,6 +6,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private Transform playerStartPosition;
     [SerializeField] private GameObject[] coinsOnLevel;
+    void Start()
+    {
+        // Завантажити вибраний скін
+        string skinId = PlayerData.GetActiveSkin();
+
+        var switcher = FindObjectOfType<SkinSwitcher>();
+        if (switcher != null)
+            switcher.ActivateSkin(skinId);
+
+        var loader = FindObjectOfType<PlayerSkinLoader>();
+        if (loader != null)
+            loader.LoadSkin();
+    }
 
     public void RestartGame()
     {

@@ -2,7 +2,7 @@
 
 public static class PlayerData
 {
-    private const string BoughtKey = "skinBought_"; // 🟡 було: BoughtSkin_
+    private const string BoughtKey = "skinBought_";
     private const string ActiveSkinKey = "ActiveSkin";
 
     public static bool IsSkinBought(string id)
@@ -18,6 +18,12 @@ public static class PlayerData
 
     public static void SetActiveSkin(string id)
     {
+        if (!IsSkinBought(id))
+        {
+            Debug.LogWarning("Скін не куплений: " + id);
+            return;
+        }
+
         PlayerPrefs.SetString(ActiveSkinKey, id);
         PlayerPrefs.Save();
     }
@@ -30,7 +36,7 @@ public static class PlayerData
         {
             id = "SkinBlue";
             PlayerPrefs.SetString(ActiveSkinKey, id);
-            PlayerPrefs.SetInt(BoughtKey + id, 1); // 🟡 ключ співпадає з UI
+            PlayerPrefs.SetInt(BoughtKey + id, 1);
             PlayerPrefs.Save();
         }
 

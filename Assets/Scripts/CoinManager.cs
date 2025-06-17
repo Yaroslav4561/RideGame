@@ -7,11 +7,14 @@ public class CoinManager : MonoBehaviour
     public TextMeshProUGUI coinText;
     public int coinCount;
 
+    private Coin[] allCoins;
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject); // Щоб не знищувався між сценами (опціонально)
         }
         else
         {
@@ -21,8 +24,11 @@ public class CoinManager : MonoBehaviour
 
     private void Start()
     {
-        coinCount = PlayerPrefs.GetInt("Coins", 0); // Завантаження збережених монет
+        coinCount = PlayerPrefs.GetInt("Coins", 0);
         UpdateUI();
+
+        // Знаходимо всі монети на сцені
+        allCoins = FindObjectsOfType<Coin>();
     }
 
     public void AddCoin(int amount)
@@ -46,6 +52,14 @@ public class CoinManager : MonoBehaviour
         if (coinText != null)
         {
             coinText.text = coinCount.ToString();
+        }
+    }
+
+    public void ResetAllCoins()
+    {
+        foreach (var coin in allCoins)
+        {
+            coin.ResetCoin(); // цей метод має бути в класі Coin
         }
     }
 }

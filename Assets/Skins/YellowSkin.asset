@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: SkinYellow
   image: {fileID: 21300000, guid: 4ee2f28ef178d4d4b8a74b91cde33065, type: 3}
-  price: 200
+  price: 100

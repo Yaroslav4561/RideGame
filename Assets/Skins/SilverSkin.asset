@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: SkinSilver
   image: {fileID: 21300000, guid: 08df2874354b5e14296725e0967df7ac, type: 3}
-  price: 200
+  price: 50

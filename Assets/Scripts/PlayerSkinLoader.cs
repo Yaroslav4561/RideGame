@@ -7,7 +7,7 @@ public class PlayerSkinLoader : MonoBehaviour
 
     public void LoadSkin()
     {
-        string selectedId = PlayerPrefs.GetString("SelectedSkin", "");
+        string selectedId = PlayerPrefs.GetString("ActiveSkin", ""); // було SelectedSkin
 
         foreach (var skin in availableSkins)
         {

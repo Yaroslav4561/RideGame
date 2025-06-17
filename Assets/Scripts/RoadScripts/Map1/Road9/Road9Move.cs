@@ -106,4 +106,13 @@ public class PlatformLift2 : MonoBehaviour
         transform.rotation = startRotation2;
         transform.position = startPosition2;
     }
+    public void ResetPlatform2()
+    {
+        StopAllCoroutines();
+        transform.rotation = startRotation2;
+        transform.position = startPosition2;
+        isFrozen2 = true;
+        isLifting2 = false;
+    }
+
 }

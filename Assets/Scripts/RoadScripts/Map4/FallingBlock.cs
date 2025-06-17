@@ -24,4 +24,5 @@ public class FallingPlatform : MonoBehaviour
         rb.isKinematic = false; // Вмикаємо фізику для падіння
         rb.velocity = new Vector2(0, -fallSpeed); // Додаємо швидкість вниз
     }
+
 }

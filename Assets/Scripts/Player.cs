@@ -182,6 +182,17 @@ public class Player : MonoBehaviour
     {
         canControl = state;
     }
+    public void ResetPlayer()
+    {
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        isDead = false;
+        transform.rotation = Quaternion.identity;
+        currentSpeed = 0f; // ❗ Обов'язково
+
+        rb.bodyType = RigidbodyType2D.Dynamic; // якщо ти раніше ставив Static після смерті
+    }
+
 
 
     public float GetCurrentSpeed()

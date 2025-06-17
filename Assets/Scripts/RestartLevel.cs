@@ -5,7 +5,7 @@ public class RestartLevel : MonoBehaviour
 {
     public void RestartScene()
     {
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        FindObjectOfType<UIManager>().RestartGame();
+        CoinManager.Instance.ResetAllCoins();
     }
 }
