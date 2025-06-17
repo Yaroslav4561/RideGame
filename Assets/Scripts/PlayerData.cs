@@ -1,9 +1,8 @@
-using UnityEngine;
-using System.Collections.Generic;
+﻿using UnityEngine;
 
 public static class PlayerData
 {
-    private const string BoughtKey = "BoughtSkin_";
+    private const string BoughtKey = "skinBought_"; // 🟡 було: BoughtSkin_
     private const string ActiveSkinKey = "ActiveSkin";
 
     public static bool IsSkinBought(string id)
@@ -25,6 +24,16 @@ public static class PlayerData
 
     public static string GetActiveSkin()
     {
-        return PlayerPrefs.GetString(ActiveSkinKey, "");
+        string id = PlayerPrefs.GetString(ActiveSkinKey, "");
+
+        if (string.IsNullOrEmpty(id))
+        {
+            id = "SkinBlue";
+            PlayerPrefs.SetString(ActiveSkinKey, id);
+            PlayerPrefs.SetInt(BoughtKey + id, 1); // 🟡 ключ співпадає з UI
+            PlayerPrefs.Save();
+        }
+
+        return id;
     }
 }

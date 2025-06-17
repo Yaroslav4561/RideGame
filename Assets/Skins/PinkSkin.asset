@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: SkinPink
   image: {fileID: 21300000, guid: 60b82f6891426cd4cbb349b3ae2556f4, type: 3}
-  price: 200
+  price: 10

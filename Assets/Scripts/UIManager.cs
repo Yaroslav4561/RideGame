@@ -30,7 +30,15 @@ public class UIManager : MonoBehaviour
 
         if (skinLoader != null)
         {
-            skinLoader.LoadSkin(); // застосувати обраний ск≥н
+            skinLoader.LoadSkin(); // застосувати спрайт гравц€
+        }
+
+        var skinSwitcher = FindObjectOfType<SkinSwitcher>();
+        if (skinSwitcher != null)
+        {
+            skinSwitcher.ActivateSkin(PlayerData.GetActiveSkin()); // активувати об'Їкт ск≥на
         }
     }
+
+
 }

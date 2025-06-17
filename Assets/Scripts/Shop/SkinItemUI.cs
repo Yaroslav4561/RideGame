@@ -8,55 +8,69 @@ public class SkinItemUI : MonoBehaviour
     public TextMeshProUGUI priceText;
     public Button selectButton;
     public SkinData skinData;
+    public GameObject priceContainer; // Контейнер для ціни і монети
+    public TextMeshProUGUI buttonText;
 
     public void Setup(SkinData data)
     {
         skinData = data;
         skinImage.sprite = data.image;
-
-        bool isBought = PlayerPrefs.GetInt("Skin_" + data.id, 0) == 1;
-        string selectedSkin = PlayerPrefs.GetString("SelectedSkin", "");
-
-        if (selectedSkin == data.id)
-        {
-            priceText.text = "Обрано";
-            selectButton.interactable = true;
-        }
-        else if (isBought)
-        {
-            priceText.text = "Куплено";
-            selectButton.interactable = true;
-        }
-        else
-        {
-            priceText.text = data.price.ToString() + " 🪙";
-            selectButton.interactable = true;
-        }
+        priceText.text = data.price.ToString();
 
         selectButton.onClick.RemoveAllListeners();
         selectButton.onClick.AddListener(() =>
         {
-            if (!isBought)
+            bool alreadyBought = PlayerPrefs.GetInt("skinBought_" + data.id, 0) == 1;
+
+            if (!alreadyBought && CoinManager.Instance != null && CoinManager.Instance.coinCount >= data.price)
             {
-                int coins = PlayerPrefs.GetInt("Coins", 0);
-                if (coins >= data.price)
-                {
-                    coins -= data.price;
-                    PlayerPrefs.SetInt("Coins", coins);
-                    PlayerPrefs.SetInt("Skin_" + data.id, 1);
-                    Debug.Log("Скін куплено: " + data.id);
-                }
-                else
-                {
-                    Debug.Log("Недостатньо монет");
-                    return;
-                }
+                CoinManager.Instance.Spend(data.price);
+                PlayerPrefs.SetInt("skinBought_" + data.id, 1);
             }
 
-            PlayerPrefs.SetString("SelectedSkin", data.id);
+            // Зберегти обраний скін
+            PlayerData.SetActiveSkin(data.id);
+
+            // Активувати об'єкт скіна на сцені
+            var switcher = FindObjectOfType<SkinSwitcher>();
+            if (switcher != null)
+                switcher.ActivateSkin(data.id);
+
+            // Застосувати спрайт гравця
+            var loader = FindObjectOfType<PlayerSkinLoader>();
+            if (loader != null)
+                loader.LoadSkin();
+
             PlayerPrefs.Save();
 
+            Debug.Log("✅ Скін вибрано: " + data.id);
+
+            // Оновити інтерфейс магазину
             FindObjectOfType<SkinShopUI>().UpdateAll();
         });
+
+        UpdateVisualState();
     }
+
+    private void UpdateVisualState()
+    {
+        bool isBought = PlayerData.IsSkinBought(skinData.id);
+        string selectedId = PlayerData.GetActiveSkin();
+
+        if (isBought)
+        {
+            priceContainer.SetActive(false);
+
+            if (skinData.id == selectedId)
+                buttonText.text = "Обрано";
+            else
+                buttonText.text = "Обрати";
+        }
+        else
+        {
+            priceContainer.SetActive(true);
+            buttonText.text = "Купити";
+        }
+    }
+
 }

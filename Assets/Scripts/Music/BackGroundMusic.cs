@@ -1,16 +1,42 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 public class BackgroundMusic : MonoBehaviour
 {
-    public AudioClip backgroundMusic; // Присвой у Inspector
+    public AudioClip backgroundMusic;
     private AudioSource audioSource;
+    private const string MusicPrefKey = "MusicEnabled";
 
     void Start()
     {
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = backgroundMusic;
-        audioSource.loop = true; // Зациклюємо музику
-        audioSource.playOnAwake = true;
-        audioSource.Play();
+        audioSource.loop = true;
+        audioSource.playOnAwake = false;
+
+        bool enabled = PlayerPrefs.GetInt(MusicPrefKey, 1) == 1;
+        if (enabled)
+        {
+            audioSource.Play();
+        }
     }
+
+
+    public void ToggleMusic()
+    {
+        bool isOn = PlayerPrefs.GetInt(MusicPrefKey, 1) == 1;
+
+        if (isOn)
+        {
+            audioSource.Stop(); // в›” РїРѕРІРЅС–СЃС‚СЋ Р·СѓРїРёРЅСЏС”РјРѕ РјСѓР·РёРєСѓ
+            PlayerPrefs.SetInt(MusicPrefKey, 0);
+        }
+        else
+        {
+            audioSource.Play(); // в–¶пёЏ РІРјРёРєР°С”РјРѕ РјСѓР·РёРєСѓ Р·РЅРѕРІСѓ
+            PlayerPrefs.SetInt(MusicPrefKey, 1);
+        }
+
+        PlayerPrefs.Save();
+    }
+
 }

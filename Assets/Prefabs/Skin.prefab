@@ -93,6 +93,8 @@ MonoBehaviour:
   priceText: {fileID: 8756642641925627172}
   selectButton: {fileID: 3472558291647282621}
   skinData: {fileID: 0}
+  priceContainer: {fileID: 1311335298171708687}
+  buttonText: {fileID: 7295709453630818110}
 --- !u!1 &1237091386655273929
 GameObject:
   m_ObjectHideFlags: 0

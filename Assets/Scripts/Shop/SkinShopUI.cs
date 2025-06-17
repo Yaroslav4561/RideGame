@@ -8,6 +8,7 @@ public class SkinShopUI : MonoBehaviour
 
     void Start()
     {
+        PlayerData.GetActiveSkin();
         UpdateAll();
     }
 
