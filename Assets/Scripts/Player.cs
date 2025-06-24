@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
@@ -27,11 +27,10 @@ public class Player : MonoBehaviour
     private bool isInAir = false;
     private bool isDead = false;
     private bool canControl = true;
+
+
     public GameObject shopUI;
     public GameObject mainMenuUI;
-
-
-
 
     void Start()
     {
@@ -41,19 +40,18 @@ public class Player : MonoBehaviour
         gameOverMenu.SetActive(false);
     }
 
-
     void Update()
     {
-        // Блокуємо гравця, якщо відкритий магазин або головне меню
         if ((shopUI != null && shopUI.activeSelf) ||
             (mainMenuUI != null && mainMenuUI.activeSelf))
         {
             rb.velocity = Vector2.zero;
             return;
         }
-        if (!canControl) return;
-        bool headHit = Physics2D.OverlapCircle(headCheck.position, headCheckRadius, groundLayer);
 
+        if (!canControl) return;
+
+        bool headHit = Physics2D.OverlapCircle(headCheck.position, headCheckRadius, groundLayer);
         if (headHit)
         {
             Die();
@@ -80,12 +78,14 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         if ((shopUI != null && shopUI.activeSelf) ||
-     (mainMenuUI != null && mainMenuUI.activeSelf))
+            (mainMenuUI != null && mainMenuUI.activeSelf))
         {
             rb.velocity = Vector2.zero;
             return;
         }
+
         if (!canControl) return;
+
         if (!isInAir)
         {
             if (isTouching)
@@ -98,12 +98,10 @@ public class Player : MonoBehaviour
             }
 
             currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeed);
+            rb.velocity = new Vector2(transform.right.x, transform.right.y).normalized * currentSpeed;
 
-            rb.velocity = transform.right * currentSpeed;
         }
     }
-
-
 
     public void TakeDamage(int damage)
     {
@@ -131,22 +129,75 @@ public class Player : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Static;
 
         animator.SetTrigger("Die");
-
         StartCoroutine(DeathRoutine());
     }
 
     private IEnumerator DeathRoutine()
     {
         float deathAnimTime = animator.GetCurrentAnimatorStateInfo(0).length;
-
         yield return new WaitForSeconds(deathAnimTime);
 
         gameObject.SetActive(false);
-
         ShowGameOverMenu();
     }
 
+    private void ShowGameOverMenu()
+    {
+        gameOverMenu.SetActive(true);
 
+        float finalScore = FindObjectOfType<DistanceTracker>().DistanceTravelled;
+
+        Transform inputPanel = gameOverMenu.transform.Find("InputPanel");
+        Transform leaderboardPanel = gameOverMenu.transform.Find("LeaderboardPanel");
+
+        if (LeaderboardManager.Instance.IsHighScore(finalScore))
+        {
+            inputPanel.gameObject.SetActive(true);
+            leaderboardPanel.gameObject.SetActive(false);
+
+            Button confirmBtn = inputPanel.Find("ConfirmButton").GetComponent<Button>();
+            TMP_InputField input = inputPanel.Find("NameInput").GetComponent<TMP_InputField>();
+
+            confirmBtn.onClick.RemoveAllListeners();
+            confirmBtn.onClick.AddListener(() =>
+            {
+                string name = string.IsNullOrEmpty(input.text) ? "Player" : input.text;
+                LeaderboardManager.Instance.AddEntry(name, finalScore);
+                inputPanel.gameObject.SetActive(false);
+                ShowLeaderboard();
+            });
+        }
+        else
+        {
+            inputPanel.gameObject.SetActive(false);
+            ShowLeaderboard();
+        }
+    }
+
+    private void ShowLeaderboard()
+    {
+        Transform leaderboardPanel = gameOverMenu.transform.Find("LeaderboardPanel");
+        leaderboardPanel.gameObject.SetActive(true);
+
+        Transform content = leaderboardPanel.Find("Content");
+        foreach (Transform child in content)
+        {
+            Destroy(child.gameObject);
+        }
+
+        GameObject prefab = Resources.Load<GameObject>("LeaderboardEntryPrefab");
+        if (prefab == null)
+        {
+            Debug.LogError("❌ Не знайдено префаб LeaderboardEntryPrefab у Resources!");
+            return;
+        }
+
+        foreach (var entry in LeaderboardManager.Instance.GetEntries())
+        {
+            GameObject item = Instantiate(prefab, content);
+            item.GetComponent<TextMeshProUGUI>().text = $"{entry.playerName} - {entry.score:F1} м";
+        }
+    }
 
     private void OnDrawGizmos()
     {
@@ -163,11 +214,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void ShowGameOverMenu()
-    {
-        gameOverMenu.SetActive(true);
-    }
-
     public void RestartGame()
     {
         Time.timeScale = 1f;
@@ -178,22 +224,21 @@ public class Player : MonoBehaviour
     {
         Application.Quit();
     }
+
     public void SetControl(bool state)
     {
         canControl = state;
     }
+
     public void ResetPlayer()
     {
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
         isDead = false;
         transform.rotation = Quaternion.identity;
-        currentSpeed = 0f; // ❗ Обов'язково
-
-        rb.bodyType = RigidbodyType2D.Dynamic; // якщо ти раніше ставив Static після смерті
+        currentSpeed = 0f;
+        rb.bodyType = RigidbodyType2D.Dynamic;
     }
-
-
 
     public float GetCurrentSpeed()
     {
